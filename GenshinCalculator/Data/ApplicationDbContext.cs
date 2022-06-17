@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GenshinCalculator.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GenshinCalculator.Data
 {
@@ -8,6 +9,7 @@ namespace GenshinCalculator.Data
         : base(options)
         {
         }
+        public DbSet<Weapon> Weapons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
