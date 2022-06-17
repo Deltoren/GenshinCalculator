@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using GenshinCalculator.Models;
 
 namespace GenshinCalculator.Data
 {
