@@ -32,7 +32,10 @@
             Редкость
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rarity)
+            @for (var i = 0; i < @Model.Rarity; i++)
+            {
+                <img src="~/images/Rarity_Star_Icon.png" class="rarity-star-icon" />
+            }
         </dd>
         <dt class = "col-sm-2">
             Описание
@@ -46,6 +49,19 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.DayOfBirth)
         </dd>
+        <dt class = "col-sm-2">
+            Элемент
+        </dt>
+        <dd class = "col-sm-10">
+            <img src="~/images/@(Model.Vision.ToString())_Vision_Icon.png" class="vision-icon" title="@Model.Vision.ToString()" />
+        </dd>
+        <dt class = "col-sm-2">
+            Тип оружия
+        </dt>
+        <dd class = "col-sm-10">
+            <img src="~/images/@(Model.WeaponType.ToString())_Type_Icon.png" class="weapon-type-icon" title="@Model.WeaponType.ToString()" />
+        </dd>
+
     </dl>
 </div>
 <div>

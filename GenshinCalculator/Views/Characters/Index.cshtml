@@ -22,6 +22,12 @@
                 Редкость
             </th>
             <th>
+                Элемент
+            </th>
+            <th>
+                Тип оружия
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -33,10 +39,19 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <img src="@item.AvatarPath" />
+                <img src="@item.AvatarPath" class="character-icon" />
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Rarity)
+                @for (var i = 0; i < @item.Rarity; i++)
+                {
+                    <img src="images/Rarity_Star_Icon.png" class="rarity-star-icon" />
+                }
+            </td>
+            <td>
+                <img src="images/@(item.Vision.ToString())_Vision_Icon.png" class="vision-icon" title="@item.Vision.ToString()" />
+            </td>
+            <td>
+                <img src="images/@(item.WeaponType.ToString())_Type_Icon.png" class="weapon-type-icon" title="@item.WeaponType.ToString()" />
             </td>
             <td class="btn-block">
                 <div>

@@ -19,6 +19,15 @@ body {
 
 /* Стили для таблиц Index */
 
+table.table > tbody > tr > td > img.character-icon {
+    width: 100px;
+}
+
+table.table > tbody > tr > td >
+.vision-icon, .weapon-type-icon {
+    width: 30px;
+}
+
 table.table > tbody > tr > td.btn-block > div {
     display: flex;
     flex-direction: column;
@@ -27,4 +36,5 @@ table.table > tbody > tr > td.btn-block > div {
 
 table.table > tbody > tr > td.btn-block > div > a.btn {
     margin-bottom: 10px;
+    font-size: 0.8rem;
 }

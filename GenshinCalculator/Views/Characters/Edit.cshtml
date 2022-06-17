@@ -4,35 +4,35 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Редактирование</h1>
 
-<h4>Character</h4>
+<h4>@Model.Name</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit" asp-route-id="@ViewBag.Id">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Имя</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Fullname" class="control-label"></label>
+                <label asp-for="Fullname" class="control-label">Полное имя</label>
                 <input asp-for="Fullname" class="form-control" />
                 <span asp-validation-for="Fullname" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="AvatarPath" class="control-label"></label>
+                <label asp-for="AvatarPath" class="control-label">Иконка персонажа (URL)</label>
                 <input asp-for="AvatarPath" class="form-control" />
                 <span asp-validation-for="AvatarPath" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Rarity" class="control-label"></label>
+                <label asp-for="Rarity" class="control-label">Редкость</label>
                 <select asp-for="Rarity" class="form-control">
                     @for (int value = 1; value <= 5; value++)
                     {
@@ -43,38 +43,35 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <label asp-for="Description" class="control-label">Описание</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="DayOfBirth" class="control-label"></label>
+                <label asp-for="DayOfBirth" class="control-label">День рождения</label>
                 <input asp-for="DayOfBirth" class="form-control" />
                 <span asp-validation-for="DayOfBirth" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Vision" class="control-label"></label>
+                <label asp-for="Vision" class="control-label">Элемент</label>
                 <select asp-for="Vision" asp-items="Html.GetEnumSelectList<Vision>()" class="form-control"></select>
                 <span asp-validation-for="Vision" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="WeaponType" class="control-label"></label>
+                <label asp-for="WeaponType" class="control-label">Тип оружия</label>
                 <select asp-for="WeaponType" asp-items="Html.GetEnumSelectList<WeaponType>()" class="form-control"></select>
                 <span asp-validation-for="WeaponType" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Вернуться</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
