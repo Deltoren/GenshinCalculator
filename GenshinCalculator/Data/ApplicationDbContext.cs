@@ -9,6 +9,7 @@ namespace GenshinCalculator.Data
         : base(options)
         {
         }
+        public DbSet<Food> Foods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
