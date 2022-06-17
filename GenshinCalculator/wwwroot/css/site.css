@@ -16,3 +16,15 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Стили для таблиц Index */
+
+table.table > tbody > tr > td.btn-block > div {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+table.table > tbody > tr > td.btn-block > div > a.btn {
+    margin-bottom: 10px;
+}
