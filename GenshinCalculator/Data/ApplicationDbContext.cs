@@ -10,6 +10,7 @@ namespace GenshinCalculator.Data
         {
         }
         public DbSet<Character> Characters { get; set; }
+        public DbSet<Region> Regions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
