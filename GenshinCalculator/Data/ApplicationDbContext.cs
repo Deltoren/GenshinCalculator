@@ -11,6 +11,7 @@ namespace GenshinCalculator.Data
         }
         public DbSet<Character> Characters { get; set; }
         public DbSet<Region> Regions { get; set; }
+        public DbSet<CharacterRegion> CharacterRegions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,7 +20,5 @@ namespace GenshinCalculator.Data
             modelBuilder.Entity<CharacterRegion>()
                 .HasKey(x => new { x.CharacterId, x.RegionId });
         }
-
-        public DbSet<GenshinCalculator.Models.CharacterRegion>? CharacterRegion { get; set; }
     }
 }

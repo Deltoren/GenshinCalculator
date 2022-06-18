@@ -34,6 +34,11 @@ table.table > tbody > tr > td.btn-block > div {
     padding: 10px;
 }
 
+table.table > tbody > tr > td.region-block > div {
+    display: flex;
+    flex-direction: column;
+}
+
 table.table > tbody > tr > td.btn-block > div > a.btn {
     margin-bottom: 10px;
     font-size: 0.8rem;

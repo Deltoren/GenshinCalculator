@@ -66,5 +66,6 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Редактировать</a>
+    <a asp-controller="CharacterRegions" asp-action="Index" asp-route-characterId="@Model.Id" class="btn btn-info">Регионы</a>
     <a asp-action="Index" class="btn btn-secondary">Вернуться</a>
 </div>

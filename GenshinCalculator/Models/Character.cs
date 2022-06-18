@@ -11,5 +11,6 @@
         public DateTime DayOfBirth { get; set; }
         public Vision Vision { get; set; }
         public WeaponType WeaponType { get; set; }
+        public ICollection<CharacterRegion>? CharacterRegions { get; set; }
     }
 }

@@ -4,17 +4,15 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Регионы @ViewBag.Character.Name</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" asp-route-characterId="@ViewBag.Character.Id" class="btn btn-primary">Добавить регион</a>
+    <a asp-controller="Characters" asp-action="Details" asp-route-id="@ViewBag.Character.Id" class="btn btn-secondary">Вернуться к персонажу</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Character)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Region)
             </th>
@@ -25,15 +23,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Character.Id)
+                @Html.DisplayFor(modelItem => item.Region.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Region.Id)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                <a asp-action="Delete" asp-route-characterId="@item.Character.Id" asp-route-regionId="@item.Region.Id" class="btn btn-danger">Удалить</a>
             </td>
         </tr>
 }

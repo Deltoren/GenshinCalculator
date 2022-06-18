@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GenshinCalculator.Data;
 using GenshinCalculator.Models;
+using GenshinCalculator.Models.ViewModels;
 
 namespace GenshinCalculator.Controllers
 {
@@ -35,42 +36,36 @@ namespace GenshinCalculator.Controllers
                 return NotFound();
             }
 
-            ViewBag.CharacterId = character.Id;
+            ViewBag.Character = character;
 
-            var characterRegions = await context.CharacterRegion
-                .Include(w => w.Character)
+            var characterRegions = await context.CharacterRegions
+                .Include(w => w.Region)
                 .Where(x => x.CharacterId == characterId)
                 .ToListAsync();
 
             return View(characterRegions);
         }
 
-        // GET: CharacterRegions/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || context.CharacterRegion == null)
-            {
-                return NotFound();
-            }
-
-            var characterRegion = await context.CharacterRegion
-                .Include(c => c.Character)
-                .Include(c => c.Region)
-                .FirstOrDefaultAsync(m => m.CharacterId == id);
-            if (characterRegion == null)
-            {
-                return NotFound();
-            }
-
-            return View(characterRegion);
-        }
-
         // GET: CharacterRegions/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? characterId)
         {
-            ViewData["CharacterId"] = new SelectList(context.Characters, "Id", "Id");
-            ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Id");
-            return View();
+            if (characterId == null)
+            {
+                return NotFound();
+            }
+
+            var character = await context.Characters
+                .SingleOrDefaultAsync(x => x.Id == characterId);
+
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Character = character;
+            ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Name");
+
+            return View(new CharacterRegionCreateModel());
         }
 
         // POST: CharacterRegions/Create
@@ -78,116 +73,83 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CharacterId,RegionId")] CharacterRegion characterRegion)
+        public async Task<IActionResult> Create(int? characterId, CharacterRegionCreateModel model)
         {
+            if (characterId == null)
+            {
+                return NotFound();
+            }
+
+            var character = await context.Characters
+                .SingleOrDefaultAsync(x => x.Id == characterId);
+
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            var item = await context.CharacterRegions
+                .Include(h => h.Character)
+                .Include(h => h.Region)
+                .SingleOrDefaultAsync(m => m.CharacterId == characterId && m.RegionId == model.RegionId);
+
+            if (item != null)
+            {
+                ViewBag.Error = "Данный персонаж уже имеет данный регион";
+                ViewBag.Character = character;
+                ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Name");
+                return View(model);
+            }
+
+
             if (ModelState.IsValid)
             {
+                var characterRegion = new CharacterRegion
+                {
+                    CharacterId = character.Id,
+                    RegionId = model.RegionId
+                };
+
                 context.Add(characterRegion);
                 await context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CharacterId"] = new SelectList(context.Characters, "Id", "Id", characterRegion.CharacterId);
-            ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Id", characterRegion.RegionId);
-            return View(characterRegion);
-        }
-
-        // GET: CharacterRegions/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || context.CharacterRegion == null)
-            {
-                return NotFound();
+                return RedirectToAction("Index", new { characterId = character.Id });
             }
 
-            var characterRegion = await context.CharacterRegion.FindAsync(id);
-            if (characterRegion == null)
-            {
-                return NotFound();
-            }
-            ViewData["CharacterId"] = new SelectList(context.Characters, "Id", "Id", characterRegion.CharacterId);
-            ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Id", characterRegion.RegionId);
-            return View(characterRegion);
-        }
+            ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Name");
 
-        // POST: CharacterRegions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CharacterId,RegionId")] CharacterRegion characterRegion)
-        {
-            if (id != characterRegion.CharacterId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    context.Update(characterRegion);
-                    await context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CharacterRegionExists(characterRegion.CharacterId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CharacterId"] = new SelectList(context.Characters, "Id", "Id", characterRegion.CharacterId);
-            ViewData["RegionId"] = new SelectList(context.Regions, "Id", "Id", characterRegion.RegionId);
-            return View(characterRegion);
+            return View(model);
         }
 
         // GET: CharacterRegions/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? characterId, int? regionId)
         {
-            if (id == null || context.CharacterRegion == null)
+            if (characterId == null || regionId == null)
             {
                 return NotFound();
             }
 
-            var characterRegion = await context.CharacterRegion
-                .Include(c => c.Character)
-                .Include(c => c.Region)
-                .FirstOrDefaultAsync(m => m.CharacterId == id);
-            if (characterRegion == null)
+            var placement = await this.context.CharacterRegions
+                .Include(h => h.Character)
+                .Include(h => h.Region)
+                .SingleOrDefaultAsync(m => m.CharacterId == characterId && m.RegionId == regionId);
+
+            if (placement == null)
             {
                 return NotFound();
             }
 
-            return View(characterRegion);
+            return View(placement);
         }
 
         // POST: CharacterRegions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int characterId, int regionId)
         {
-            if (context.CharacterRegion == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.CharacterRegion'  is null.");
-            }
-            var characterRegion = await context.CharacterRegion.FindAsync(id);
-            if (characterRegion != null)
-            {
-                context.CharacterRegion.Remove(characterRegion);
-            }
-            
+            var characterRegion = await context.CharacterRegions.SingleOrDefaultAsync(m => m.CharacterId == characterId && m.RegionId == regionId);
+            context.CharacterRegions.Remove(characterRegion);
             await context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CharacterRegionExists(int id)
-        {
-          return (context.CharacterRegion?.Any(e => e.CharacterId == id)).GetValueOrDefault();
+            return RedirectToAction("Index", new { characterId = characterId });
         }
     }
 }

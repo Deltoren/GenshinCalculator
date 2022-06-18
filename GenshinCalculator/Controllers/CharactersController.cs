@@ -23,9 +23,12 @@ namespace GenshinCalculator.Controllers
         // GET: Characters
         public async Task<IActionResult> Index()
         {
-              return context.Characters != null ? 
-                          View(await context.Characters.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Characters'  is null.");
+            var characters = await context.Characters
+                .Include(w => w.CharacterRegions)
+                .ThenInclude(x => x.Region)
+                .ToListAsync();
+
+            return View(characters);
         }
 
         // GET: Characters/Details/5

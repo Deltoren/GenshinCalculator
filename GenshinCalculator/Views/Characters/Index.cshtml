@@ -28,6 +28,9 @@
                 Тип оружия
             </th>
             <th>
+                Регион
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -52,6 +55,14 @@
             </td>
             <td>
                 <img src="images/@(item.WeaponType.ToString())_Type_Icon.png" class="weapon-type-icon" title="@item.WeaponType.ToString()" />
+            </td>
+            <td class="region-block">
+                <div>
+                    @foreach (var region in item.CharacterRegions)
+                    {
+                        <span>@region.Region.Name</span>
+                    }
+                </div>
             </td>
             <td class="btn-block">
                 <div>
