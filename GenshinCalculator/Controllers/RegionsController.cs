@@ -7,35 +7,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GenshinCalculator.Data;
 using GenshinCalculator.Models;
+using GenshinCalculator.Models.ViewModels;
 
 namespace GenshinCalculator.Controllers
 {
     public class RegionsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public RegionsController(ApplicationDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         // GET: Regions
         public async Task<IActionResult> Index()
         {
-              return _context.Regions != null ? 
-                          View(await _context.Regions.ToListAsync()) :
+              return context.Regions != null ? 
+                          View(await context.Regions.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Regions'  is null.");
         }
 
         // GET: Regions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Regions == null)
+            if (id == null || context.Regions == null)
             {
                 return NotFound();
             }
 
-            var region = await _context.Regions
+            var region = await context.Regions
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (region == null)
             {
@@ -48,7 +49,7 @@ namespace GenshinCalculator.Controllers
         // GET: Regions/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new RegionCreateModel());
         }
 
         // POST: Regions/Create
@@ -56,31 +57,46 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Region region)
+        public async Task<IActionResult> Create(RegionCreateModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(region);
-                await _context.SaveChangesAsync();
+                var region = new Region
+                {
+                    Name = model.Name
+                };
+
+                context.Add(region);
+                await context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(region);
+            return View(model);
         }
 
         // GET: Regions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Regions == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var region = await _context.Regions.FindAsync(id);
+            var region = await context.Regions
+                .SingleOrDefaultAsync(y => y.Id == id);
+
             if (region == null)
             {
                 return NotFound();
             }
-            return View(region);
+
+            var model = new RegionEditModel
+            {
+                Name = region.Name
+            };
+
+            ViewBag.Id = region.Id;
+
+            return View(model);
         }
 
         // POST: Regions/Edit/5
@@ -88,45 +104,39 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Region region)
+        public async Task<IActionResult> Edit(int? id, RegionEditModel model)
         {
-            if (id != region.Id)
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var region = await context.Regions
+                .SingleOrDefaultAsync(y => y.Id == id);
+
+            if (region == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(region);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RegionExists(region.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                region.Name = model.Name;
             }
-            return View(region);
+
+            await context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Regions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Regions == null)
+            if (id == null || context.Regions == null)
             {
                 return NotFound();
             }
 
-            var region = await _context.Regions
+            var region = await context.Regions
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (region == null)
             {
@@ -141,23 +151,23 @@ namespace GenshinCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Regions == null)
+            if (context.Regions == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Regions'  is null.");
             }
-            var region = await _context.Regions.FindAsync(id);
+            var region = await context.Regions.FindAsync(id);
             if (region != null)
             {
-                _context.Regions.Remove(region);
+                context.Regions.Remove(region);
             }
             
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RegionExists(int id)
         {
-          return (_context.Regions?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (context.Regions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
