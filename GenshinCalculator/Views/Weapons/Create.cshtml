@@ -1,4 +1,4 @@
-﻿@model GenshinCalculator.Models.Weapon
+﻿@model GenshinCalculator.Models.ViewModels.WeaponCreateModel
 
 @{
     ViewData["Title"] = "Create";
@@ -12,35 +12,42 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Имя</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Rarity" class="control-label"></label>
-                <input asp-for="Rarity" class="form-control" />
+                <label asp-for="Rarity" class="control-label">Редкость</label>
+                <select asp-for="Rarity" class="form-control">
+                    @for (int value = 1; value <= 5; value++)
+                    {
+                        <option value="@value">@value</option>
+                    }
+                </select>
                 <span asp-validation-for="Rarity" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="ImagePath" class="control-label"></label>
+                <label asp-for="ImagePath" class="control-label">Иконка оружия (URL)</label>
                 <input asp-for="ImagePath" class="form-control" />
                 <span asp-validation-for="ImagePath" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="WeaponType" class="control-label"></label>
-                <select asp-for="WeaponType" class="form-control"></select>
+
+            <div class="form-group mb-3">
+                <label asp-for="WeaponType" class="control-label">Тип оружия</label>
+                <select asp-for="WeaponType" asp-items="Html.GetEnumSelectList<WeaponType>()" class="form-control"></select>
                 <span asp-validation-for="WeaponType" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Создать" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Вернуться</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
