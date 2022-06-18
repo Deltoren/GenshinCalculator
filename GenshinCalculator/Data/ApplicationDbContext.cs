@@ -15,6 +15,11 @@ namespace GenshinCalculator.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CharacterRegion>()
+                .HasKey(x => new { x.CharacterId, x.RegionId });
         }
+
+        public DbSet<GenshinCalculator.Models.CharacterRegion>? CharacterRegion { get; set; }
     }
 }
