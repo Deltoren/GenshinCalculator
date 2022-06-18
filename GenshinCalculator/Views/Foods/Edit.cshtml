@@ -1,4 +1,4 @@
-﻿@model GenshinCalculator.Models.Food
+﻿@model GenshinCalculator.Models.ViewModels.FoodEditModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,38 +10,44 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" asp-route-id="@ViewBag.Id">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Название</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <label asp-for="Description" class="control-label">Описание</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Rarity" class="control-label"></label>
-                <input asp-for="Rarity" class="form-control" />
+                <label asp-for="Rarity" class="control-label">Редкость</label>
+                <select asp-for="Rarity" class="form-control">
+                    @for (int value = 1; value <= 5; value++)
+                    {
+                        <option value="@value">@value</option>
+                    }
+                </select>
                 <span asp-validation-for="Rarity" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="ImagePath" class="control-label"></label>
+                <label asp-for="ImagePath" class="control-label">Иконка еды (URL)</label>
                 <input asp-for="ImagePath" class="form-control" />
                 <span asp-validation-for="ImagePath" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Создать" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Вернуться</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

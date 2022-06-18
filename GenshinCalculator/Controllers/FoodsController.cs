@@ -7,35 +7,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GenshinCalculator.Data;
 using GenshinCalculator.Models;
+using GenshinCalculator.Models.ViewModels;
 
 namespace GenshinCalculator.Controllers
 {
     public class FoodsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public FoodsController(ApplicationDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         // GET: Foods
         public async Task<IActionResult> Index()
         {
-              return _context.Foods != null ? 
-                          View(await _context.Foods.ToListAsync()) :
+              return context.Foods != null ? 
+                          View(await context.Foods.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Foods'  is null.");
         }
 
         // GET: Foods/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Foods == null)
+            if (id == null || context.Foods == null)
             {
                 return NotFound();
             }
 
-            var food = await _context.Foods
+            var food = await context.Foods
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (food == null)
             {
@@ -48,7 +49,7 @@ namespace GenshinCalculator.Controllers
         // GET: Foods/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new FoodCreateModel());
         }
 
         // POST: Foods/Create
@@ -56,31 +57,46 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Rarity,ImagePath")] Food food)
+        public async Task<IActionResult> Create(FoodCreateModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(food);
-                await _context.SaveChangesAsync();
+                var food = new Food
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Rarity = model.Rarity,
+                    ImagePath = model.ImagePath
+                };
+                context.Add(food);
+                await context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(food);
+            return View(model);
         }
 
         // GET: Foods/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Foods == null)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            var food = await _context.Foods.FindAsync(id);
+            var food = await context.Foods
+                .SingleOrDefaultAsync(y => y.Id == id);
             if (food == null)
             {
                 return NotFound();
             }
-            return View(food);
+            var model = new FoodEditModel
+            {
+                Name = food.Name,
+                Description = food.Description,
+                Rarity = food.Rarity,
+                ImagePath = food.ImagePath
+            };
+            ViewBag.Id = food.Id;
+            return View(model);
         }
 
         // POST: Foods/Edit/5
@@ -88,45 +104,38 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Rarity,ImagePath")] Food food)
+        public async Task<IActionResult> Edit(int? id, FoodEditModel model)
         {
-            if (id != food.Id)
+            if (id == null)
             {
                 return NotFound();
             }
-
+            var food = await context.Foods
+                .SingleOrDefaultAsync(y => y.Id == id);
+            if (food == null)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(food);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FoodExists(food.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                food.Name = model.Name;
+                food.Description = model.Description;
+                food.Rarity = model.Rarity;
+                food.ImagePath = model.ImagePath;
             }
-            return View(food);
+            await context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Foods/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Foods == null)
+            if (id == null || context.Foods == null)
             {
                 return NotFound();
             }
 
-            var food = await _context.Foods
+            var food = await context.Foods
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (food == null)
             {
@@ -141,23 +150,23 @@ namespace GenshinCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Foods == null)
+            if (context.Foods == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Foods'  is null.");
             }
-            var food = await _context.Foods.FindAsync(id);
+            var food = await context.Foods.FindAsync(id);
             if (food != null)
             {
-                _context.Foods.Remove(food);
+                context.Foods.Remove(food);
             }
             
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool FoodExists(int id)
         {
-          return (_context.Foods?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (context.Foods?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
