@@ -7,35 +7,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GenshinCalculator.Data;
 using GenshinCalculator.Models;
+using GenshinCalculator.Models.ViewModels;
 
 namespace GenshinCalculator.Controllers
 {
     public class FurnishingsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public FurnishingsController(ApplicationDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         // GET: Furnishings
         public async Task<IActionResult> Index()
         {
-              return _context.Furnishings != null ? 
-                          View(await _context.Furnishings.ToListAsync()) :
+              return context.Furnishings != null ? 
+                          View(await context.Furnishings.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Furnishings'  is null.");
         }
 
         // GET: Furnishings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Furnishings == null)
+            if (id == null || context.Furnishings == null)
             {
                 return NotFound();
             }
 
-            var furnishing = await _context.Furnishings
+            var furnishing = await context.Furnishings
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (furnishing == null)
             {
@@ -48,7 +49,7 @@ namespace GenshinCalculator.Controllers
         // GET: Furnishings/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new FurnishingCreateModel());
         }
 
         // POST: Furnishings/Create
@@ -56,31 +57,46 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Rarity,ImagePath")] Furnishing furnishing)
+        public async Task<IActionResult> Create(FurnishingCreateModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(furnishing);
-                await _context.SaveChangesAsync();
+                var furnishing = new Furnishing
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Rarity = model.Rarity,
+                    ImagePath = model.ImagePath
+                };
+                context.Add(furnishing);
+                await context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(furnishing);
+            return View(model);
         }
 
         // GET: Furnishings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Furnishings == null)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            var furnishing = await _context.Furnishings.FindAsync(id);
+            var furnishing = await context.Furnishings
+                .SingleOrDefaultAsync(y => y.Id == id);
             if (furnishing == null)
             {
                 return NotFound();
             }
-            return View(furnishing);
+            var model = new FurnishingEditModel
+            {
+                Name = furnishing.Name,
+                Description = furnishing.Description,
+                Rarity = furnishing.Rarity,
+                ImagePath = furnishing.ImagePath
+            };
+            ViewBag.Id = furnishing.Id;
+            return View(model);
         }
 
         // POST: Furnishings/Edit/5
@@ -88,45 +104,38 @@ namespace GenshinCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Rarity,ImagePath")] Furnishing furnishing)
+        public async Task<IActionResult> Edit(int? id, FurnishingEditModel model)
         {
-            if (id != furnishing.Id)
+            if (id == null)
             {
                 return NotFound();
             }
-
+            var furnishing = await context.Furnishings
+                .SingleOrDefaultAsync(y => y.Id == id);
+            if (furnishing == null)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(furnishing);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FurnishingExists(furnishing.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                furnishing.Name = model.Name;
+                furnishing.Description = model.Description;
+                furnishing.Rarity = model.Rarity;
+                furnishing.ImagePath = model.ImagePath;
             }
-            return View(furnishing);
+            await context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Furnishings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Furnishings == null)
+            if (id == null || context.Furnishings == null)
             {
                 return NotFound();
             }
 
-            var furnishing = await _context.Furnishings
+            var furnishing = await context.Furnishings
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (furnishing == null)
             {
@@ -141,23 +150,23 @@ namespace GenshinCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Furnishings == null)
+            if (context.Furnishings == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Furnishings'  is null.");
             }
-            var furnishing = await _context.Furnishings.FindAsync(id);
+            var furnishing = await context.Furnishings.FindAsync(id);
             if (furnishing != null)
             {
-                _context.Furnishings.Remove(furnishing);
+                context.Furnishings.Remove(furnishing);
             }
             
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool FurnishingExists(int id)
         {
-          return (_context.Furnishings?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (context.Furnishings?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
